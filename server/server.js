@@ -12,7 +12,7 @@ const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 // Initialize Google Generative AI
-const API_KEY = process.env.API_KEY; // Replace with your actual API key
+const API_KEY = process.env.API1_KEY; // Replace with your actual API key
 const genAI = new GoogleGenerativeAI(API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
