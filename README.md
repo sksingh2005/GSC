@@ -3,7 +3,10 @@
         <h1>SafeHaven</h1>
         <h2>AI-Powered Support & Crisis Help App</h2>
         <p><strong>Category:</strong> Gender Equality + Mental Health + Justice</p>
-        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-26%20023905-KVwgRUUJBwwEm3NbrQEOLEPgBkN923.png" alt="SafeHaven Overview">
+        <div >
+        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-27%20235950-hoU1gbNteO9qUc6PFhOROtcdIsduWi.png" height=400px alt="SafeHaven Overview">
+        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-28%20000010-DryCSwIYdPNldCBRVwGXAOIqNBILjr.png" height=400px alt="SafeHaven Overview">
+        </div>
         <h2>🔍 Problem It Solves</h2>
         <ul>
             <li><strong>No Support System</strong> – Many victims lack trusted help.</li>
@@ -11,7 +14,11 @@
             <li><strong>Mental Stress & Suicidal Thoughts</strong> – No crisis support available.</li>
             <li><strong>Legal Complications</strong> – Falsely accused individuals struggle to defend themselves.</li>
         </ul>
-        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-26%20024514-QNd3SBGPlgfSV0tgMfdySx5JTiAPQv.png" alt="Problem SafeHaven Solves">
+        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-28%20015154-heTLZcruwAKaxysn5JkO9Awe9IREpR.png" height=400px  alt="Problem SafeHaven Solves">
+        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-28%20015217-Zsm9NW8qIw7IOsv5CxeuRZzhlD8qzc.png" height=400px  alt="Problem SafeHaven Solves">
+        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-28%20015350-Sm36wPvRw25mUquIsIKV7S3RfIqd27.png" height=400px  alt="Problem SafeHaven Solves">
+        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-28%20015406-VcImTJta8chvB7PuHssIGbQOLZh6mw.png" height=400px  alt="Problem SafeHaven Solves">
+        <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-28%20015419-UflAHkIwDLm2LrcTiDtjsPGEB2yAcC.png" height=400px  alt="Problem SafeHaven Solves">
         <h2>💡 How It Works</h2>
          <img src="https://n2ypycuabyjxsqre.public.blob.vercel-storage.com/Screenshot%202025-03-26%20151543-VVy6zr4TQwPo4pNcXATX5vnkMzjvox.png" alt="Problem SafeHaven Solves">
         <ul>
