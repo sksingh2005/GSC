@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Image, Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { Heart, MessageCircle, Share2, Shield } from 'lucide-react-native';
+import { Heart, MessageCircle, Share2, Shield, Users, Calendar, MapPin, CheckCircle } from 'lucide-react-native';
+
+const { width } = Dimensions.get('window');
 
 export default function Community() {
   const [activeTab, setActiveTab] = useState('discussions');
@@ -55,16 +57,95 @@ export default function Community() {
     },
   ];
 
+  const renderDiscussionPost = (post) => (
+    <BlurView key={post.id} intensity={80} tint="light" style={styles.post}>
+      <View style={styles.postHeader}>
+        <View style={styles.author}>
+          <View style={styles.avatarContainer}>
+            <Image source={{ uri: post.author.avatar }} style={styles.avatar} />
+            {post.author.isVerified && (
+              <View style={styles.verifiedBadge}>
+                <CheckCircle size={12} color="#fff" />
+              </View>
+            )}
+          </View>
+          <View>
+            <Text style={styles.authorName}>{post.author.name}</Text>
+            <Text style={styles.timestamp}>{post.timestamp}</Text>
+          </View>
+        </View>
+      </View>
+
+      <Text style={styles.postContent}>{post.content}</Text>
+
+      {post.image && (
+        <View style={styles.postImageContainer}>
+          <Image source={{ uri: post.image }} style={styles.postImage} />
+        </View>
+      )}
+
+      <View style={styles.postActions}>
+        <TouchableOpacity style={styles.action}>
+          <Heart size={20} color="#FF6B6B" fill="#FF6B6B" />
+          <Text style={styles.actionText}>{post.likes}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.action}>
+          <MessageCircle size={20} color="#4ECDC4" />
+          <Text style={styles.actionText}>{post.comments}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.action}>
+          <Share2 size={20} color="#A78BFA" />
+        </TouchableOpacity>
+      </View>
+    </BlurView>
+  );
+
+  const renderEventCard = (event) => (
+    <BlurView key={event.id} intensity={80} tint="light" style={styles.event}>
+      <View style={styles.eventImageContainer}>
+        <Image source={{ uri: event.image }} style={styles.eventImage} />
+        <View style={styles.eventBadge}>
+          <Calendar size={16} color="#fff" />
+        </View>
+      </View>
+      <View style={styles.eventContent}>
+        <Text style={styles.eventTitle}>{event.title}</Text>
+        <View style={styles.eventDetailsRow}>
+          <Calendar size={16} color="#4F46E5" />
+          <Text style={styles.eventDetailText}>{event.date}</Text>
+        </View>
+        <View style={styles.eventDetailsRow}>
+          <MapPin size={16} color="#4F46E5" />
+          <Text style={styles.eventDetailText}>{event.location}</Text>
+        </View>
+        <View style={styles.eventDetailsRow}>
+          <Users size={16} color="#4F46E5" />
+          <Text style={styles.eventDetailText}>{event.attendees} attending</Text>
+        </View>
+
+        <TouchableOpacity style={styles.joinButton}>
+          <Text style={styles.joinButtonText}>Join Event</Text>
+        </TouchableOpacity>
+      </View>
+    </BlurView>
+  );
+
   return (
     <View style={styles.container}>
       <BlurView intensity={80} tint="light" style={styles.header}>
-        <Text style={styles.headerTitle}>Community</Text>
-        <Text style={styles.headerSubtitle}>Connect, share, and grow together</Text>
-        
+        <View style={styles.headerContent}>
+          <Text style={styles.headerTitle}>Community</Text>
+          <Text style={styles.headerSubtitle}>Connect, share, and grow together</Text>
+        </View>
+
         <View style={styles.tabs}>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'discussions' && styles.activeTab]}
             onPress={() => setActiveTab('discussions')}>
+            <MessageCircle
+              size={16}
+              color={activeTab === 'discussions' ? '#fff' : '#6B7280'}
+            />
             <Text style={[styles.tabText, activeTab === 'discussions' && styles.activeTabText]}>
               Discussions
             </Text>
@@ -72,6 +153,10 @@ export default function Community() {
           <TouchableOpacity
             style={[styles.tab, activeTab === 'events' && styles.activeTab]}
             onPress={() => setActiveTab('events')}>
+            <Calendar
+              size={16}
+              color={activeTab === 'events' ? '#fff' : '#6B7280'}
+            />
             <Text style={[styles.tabText, activeTab === 'events' && styles.activeTabText]}>
               Events
             </Text>
@@ -79,66 +164,16 @@ export default function Community() {
         </View>
       </BlurView>
 
-      <ScrollView style={styles.content}>
-        {activeTab === 'discussions' ? (
-          <View style={styles.discussions}>
-            {discussions.map((post) => (
-              <BlurView key={post.id} intensity={80} tint="light" style={styles.post}>
-                <View style={styles.postHeader}>
-                  <View style={styles.author}>
-                    <Image source={{ uri: post.author.avatar }} style={styles.avatar} />
-                    <View>
-                      <Text style={styles.authorName}>{post.author.name}</Text>
-                      <Text style={styles.timestamp}>{post.timestamp}</Text>
-                    </View>
-                  </View>
-                  {post.author.isVerified && (
-                    <Shield size={16} color="#4F46E5" />
-                  )}
-                </View>
-                
-                <Text style={styles.postContent}>{post.content}</Text>
-                
-                {post.image && (
-                  <Image source={{ uri: post.image }} style={styles.postImage} />
-                )}
-                
-                <View style={styles.postActions}>
-                  <TouchableOpacity style={styles.action}>
-                    <Heart size={20} color="#6B7280" />
-                    <Text style={styles.actionText}>{post.likes}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.action}>
-                    <MessageCircle size={20} color="#6B7280" />
-                    <Text style={styles.actionText}>{post.comments}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity style={styles.action}>
-                    <Share2 size={20} color="#6B7280" />
-                  </TouchableOpacity>
-                </View>
-              </BlurView>
-            ))}
-          </View>
-        ) : (
-          <View style={styles.events}>
-            {events.map((event) => (
-              <BlurView key={event.id} intensity={80} tint="light" style={styles.event}>
-                <Image source={{ uri: event.image }} style={styles.eventImage} />
-                <View style={styles.eventContent}>
-                  <Text style={styles.eventTitle}>{event.title}</Text>
-                  <Text style={styles.eventDate}>{event.date}</Text>
-                  <Text style={styles.eventTime}>{event.time}</Text>
-                  <Text style={styles.eventLocation}>{event.location}</Text>
-                  <Text style={styles.eventAttendees}>{event.attendees} attending</Text>
-                  
-                  <TouchableOpacity style={styles.joinButton}>
-                    <Text style={styles.joinButtonText}>Join Event</Text>
-                  </TouchableOpacity>
-                </View>
-              </BlurView>
-            ))}
-          </View>
-        )}
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.contentContainer}>
+          {activeTab === 'discussions'
+            ? discussions.map(renderDiscussionPost)
+            : events.map(renderEventCard)
+          }
+        </View>
       </ScrollView>
     </View>
   );
@@ -150,30 +185,41 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
   },
   header: {
-    padding: 24,
     paddingTop: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingBottom: 16,
+    paddingHorizontal: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerContent: {
+    marginBottom: 16,
   },
   headerTitle: {
     fontFamily: 'PlusJakartaSans_600SemiBold',
-    fontSize: 24,
+    fontSize: 28,
     color: '#111827',
+    marginBottom: 4,
   },
   headerSubtitle: {
     fontFamily: 'Inter_400Regular',
     fontSize: 14,
     color: '#6B7280',
-    marginTop: 4,
   },
   tabs: {
     flexDirection: 'row',
-    marginTop: 24,
     gap: 16,
   },
   tab: {
-    paddingVertical: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 20,
+    gap: 8,
   },
   activeTab: {
     backgroundColor: '#4F46E5',
@@ -189,15 +235,20 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  discussions: {
+  contentContainer: {
     padding: 16,
     gap: 16,
   },
   post: {
     borderRadius: 16,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   postHeader: {
     flexDirection: 'row',
@@ -210,10 +261,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
   },
+  avatarContainer: {
+    position: 'relative',
+  },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    borderWidth: 2,
+    borderColor: '#4F46E5',
+  },
+  verifiedBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    backgroundColor: '#4F46E5',
+    borderRadius: 10,
+    padding: 2,
   },
   authorName: {
     fontFamily: 'Inter_600SemiBold',
@@ -232,77 +296,84 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 12,
   },
+  postImageContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 12,
+  },
   postImage: {
     width: '100%',
     height: 200,
-    borderRadius: 12,
-    marginBottom: 12,
   },
   postActions: {
     flexDirection: 'row',
-    gap: 24,
+    justifyContent: 'space-between',
   },
   action: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
   },
   actionText: {
-    fontFamily: 'Inter_400Regular',
+    fontFamily: 'Inter_600SemiBold',
     fontSize: 14,
-    color: '#6B7280',
-  },
-  events: {
-    padding: 16,
-    gap: 16,
+    color: '#4F46E5',
   },
   event: {
     borderRadius: 16,
     overflow: 'hidden',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  eventImageContainer: {
+    position: 'relative',
   },
   eventImage: {
     width: '100%',
-    height: 160,
+    height: 200,
+  },
+  eventBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: 'rgba(79, 70, 229, 0.8)',
+    borderRadius: 20,
+    padding: 8,
   },
   eventContent: {
     padding: 16,
   },
   eventTitle: {
     fontFamily: 'PlusJakartaSans_600SemiBold',
-    fontSize: 18,
+    fontSize: 20,
     color: '#111827',
-    marginBottom: 8,
-  },
-  eventDate: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 14,
-    color: '#4F46E5',
-    marginBottom: 4,
-  },
-  eventTime: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 14,
-    color: '#6B7280',
-    marginBottom: 4,
-  },
-  eventLocation: {
-    fontFamily: 'Inter_400Regular',
-    fontSize: 14,
-    color: '#6B7280',
     marginBottom: 12,
   },
-  eventAttendees: {
+  eventDetailsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  eventDetailText: {
     fontFamily: 'Inter_400Regular',
     fontSize: 14,
     color: '#6B7280',
-    marginBottom: 16,
   },
   joinButton: {
     backgroundColor: '#4F46E5',
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
+    marginTop: 8,
   },
   joinButtonText: {
     fontFamily: 'Inter_600SemiBold',

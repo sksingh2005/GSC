@@ -8,6 +8,8 @@ import {
   Image,
   ActivityIndicator,
   Dimensions,
+  StatusBar,
+  SafeAreaView,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
@@ -78,7 +80,7 @@ export default function ResourcesScreen() {
   };
 
   const navigateToVideo = (videoId: string) => {
-    router.push(`/resources/video-player?videoId=${videoId}`); // Navigate to video-player route
+    router.push(`/resources/video-player?videoId=${videoId}`);
   };
 
   const renderVideoItem = ({ item }: { item: any }) => (
@@ -107,11 +109,9 @@ export default function ResourcesScreen() {
   );
 
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={['#0A1232', '#1B3557']}
-        style={styles.backgroundGradient}
-      >
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar barStyle="light-content" />
+      <LinearGradient colors={['#0A1232', '#1B3557']} style={styles.backgroundGradient}>
         {loading ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#4F46E5" />
@@ -120,10 +120,7 @@ export default function ResourcesScreen() {
         ) : error ? (
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>{error}</Text>
-            <TouchableOpacity
-              style={styles.retryButton}
-              onPress={fetchYouTubeVideos}
-            >
+            <TouchableOpacity style={styles.retryButton} onPress={fetchYouTubeVideos}>
               <Text style={styles.retryButtonText}>Retry</Text>
             </TouchableOpacity>
           </View>
@@ -137,18 +134,20 @@ export default function ResourcesScreen() {
           />
         )}
       </LinearGradient>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: '#0A1232',
+    paddingTop: StatusBar.currentHeight || 40, // Adjusts padding for notch dynamically
   },
   backgroundGradient: {
     flex: 1,
-    paddingTop: 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   loadingContainer: {
     flex: 1,
@@ -186,7 +185,6 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   listContainer: {
-    paddingHorizontal: 24,
     paddingBottom: 100,
   },
   videoCard: {
@@ -231,3 +229,4 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.6)',
   },
 });
+

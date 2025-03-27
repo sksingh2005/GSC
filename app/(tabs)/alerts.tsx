@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform, Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
-import { MapPin, Bell, Camera, TriangleAlert as AlertTriangle } from 'lucide-react-native';
+import { MapPin, Bell, Camera, TriangleAlert as AlertTriangle, ShieldCheck, CheckCircle } from 'lucide-react-native';
+
+const { width } = Dimensions.get('window');
 
 export default function Alerts() {
   const [locationShared, setLocationShared] = useState(false);
@@ -9,12 +11,10 @@ export default function Alerts() {
 
   const handleLocationShare = () => {
     if (Platform.OS === 'web') {
-      // Web implementation for location sharing
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             setLocationShared(true);
-            // Handle location data
           },
           (error) => {
             console.error(error);
@@ -25,85 +25,103 @@ export default function Alerts() {
   };
 
   const handlePhotoUpload = () => {
-    // Implement photo upload logic
     setPhotoUploaded(true);
   };
 
   return (
     <View style={styles.container}>
-      <BlurView intensity={80} tint="light" style={styles.header}>
-        <Text style={styles.headerTitle}>Emergency Alerts</Text>
-        <Text style={styles.headerSubtitle}>Quick access to help and support</Text>
-      </BlurView>
+      <View style={styles.header}>
+        <View style={styles.headerContent}>
+          <AlertTriangle size={32} color="#DC2626" />
+          <View>
+            <Text style={styles.headerTitle}>Emergency Alerts</Text>
+            <Text style={styles.headerSubtitle}>Quick Help & Support</Text>
+          </View>
+        </View>
+      </View>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Emergency SOS</Text>
-          <TouchableOpacity style={styles.sosButton}>
-            <AlertTriangle color="#fff" size={32} />
-            <Text style={styles.sosButtonText}>Activate Emergency SOS</Text>
+      <ScrollView
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Emergency SOS Section */}
+        <TouchableOpacity style={styles.sosButton}>
+          <View style={styles.sosButtonInner}>
+            <AlertTriangle color="#fff" size={40} />
+            <Text style={styles.sosButtonText}>Emergency SOS</Text>
             <Text style={styles.sosButtonSubtext}>
-              Immediately alert emergency contacts and share your location
+              Instantly alert emergency contacts and share precise location
             </Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableOpacity>
 
-        <View style={styles.section}>
+        {/* Safety Check-in Section */}
+        <View style={styles.safetySection}>
           <Text style={styles.sectionTitle}>Safety Check-in</Text>
-          
-          <BlurView intensity={80} tint="light" style={styles.card}>
-            <View style={styles.cardHeader}>
-              <MapPin size={24} color="#4F46E5" />
-              <Text style={styles.cardTitle}>Share Location</Text>
-            </View>
-            <Text style={styles.cardDescription}>
-              Share your current location with trusted contacts
-            </Text>
-            <TouchableOpacity
-              style={[styles.actionButton, locationShared && styles.actionButtonSuccess]}
-              onPress={handleLocationShare}>
-              <Text style={styles.actionButtonText}>
-                {locationShared ? 'Location Shared' : 'Share Location'}
-              </Text>
-            </TouchableOpacity>
-          </BlurView>
 
-          <BlurView intensity={80} tint="light" style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Camera size={24} color="#4F46E5" />
-              <Text style={styles.cardTitle}>Upload Photo</Text>
-            </View>
-            <Text style={styles.cardDescription}>
-              Take or upload a photo for your safety record
-            </Text>
+          <View style={styles.cardRow}>
             <TouchableOpacity
-              style={[styles.actionButton, photoUploaded && styles.actionButtonSuccess]}
-              onPress={handlePhotoUpload}>
-              <Text style={styles.actionButtonText}>
-                {photoUploaded ? 'Photo Uploaded' : 'Upload Photo'}
+              style={[styles.card, locationShared && styles.cardSuccess]}
+              onPress={handleLocationShare}
+            >
+              <View style={styles.cardHeader}>
+                <MapPin size={24} color="#4F46E5" />
+                <Text style={styles.cardTitle}>Share Location</Text>
+              </View>
+              <Text style={styles.cardDescription}>
+                {locationShared
+                  ? 'Location shared with trusted contacts'
+                  : 'Share your current location'}
               </Text>
+              <View style={styles.cardFooter}>
+                {locationShared ? (
+                  <ShieldCheck size={24} color="#059669" />
+                ) : (
+                  <Text style={styles.cardAction}>Share Now</Text>
+                )}
+              </View>
             </TouchableOpacity>
-          </BlurView>
+
+            <TouchableOpacity
+              style={[styles.card, photoUploaded && styles.cardSuccess]}
+              onPress={handlePhotoUpload}
+            >
+              <View style={styles.cardHeader}>
+                <Camera size={24} color="#4F46E5" />
+                <Text style={styles.cardTitle}>Upload Photo</Text>
+              </View>
+              <Text style={styles.cardDescription}>
+                {photoUploaded
+                  ? 'Safety photo recorded'
+                  : 'Take or upload a safety record photo'}
+              </Text>
+              <View style={styles.cardFooter}>
+                {photoUploaded ? (
+                  <CheckCircle size={24} color="#059669" />
+                ) : (
+                  <Text style={styles.cardAction}>Upload</Text>
+                )}
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View style={styles.section}>
+        {/* Recent Alerts Section */}
+        <View style={styles.alertSection}>
           <Text style={styles.sectionTitle}>Recent Alerts</Text>
-          
-          <BlurView intensity={80} tint="light" style={styles.alertCard}>
-            <Bell size={20} color="#DC2626" />
-            <View style={styles.alertContent}>
-              <Text style={styles.alertTitle}>Emergency Alert Triggered</Text>
-              <Text style={styles.alertTime}>Today, 2:30 PM</Text>
-            </View>
-          </BlurView>
 
-          <BlurView intensity={80} tint="light" style={styles.alertCard}>
-            <MapPin size={20} color="#4F46E5" />
-            <View style={styles.alertContent}>
-              <Text style={styles.alertTitle}>Location Shared</Text>
-              <Text style={styles.alertTime}>Today, 1:15 PM</Text>
+          {[
+            { icon: <Bell size={20} color="#DC2626" />, title: 'Emergency Alert Triggered', time: 'Today, 2:30 PM' },
+            { icon: <MapPin size={20} color="#4F46E5" />, title: 'Location Shared', time: 'Today, 1:15 PM' }
+          ].map((alert, index) => (
+            <View key={index} style={styles.alertCard}>
+              {alert.icon}
+              <View style={styles.alertContent}>
+                <Text style={styles.alertTitle}>{alert.title}</Text>
+                <Text style={styles.alertTime}>{alert.time}</Text>
+              </View>
             </View>
-          </BlurView>
+          ))}
         </View>
       </ScrollView>
     </View>
@@ -116,12 +134,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#F3F4F6',
   },
   header: {
-    padding: 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     paddingTop: 60,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingBottom: 20,
+    paddingHorizontal: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
   },
   headerTitle: {
-    fontFamily: 'PlusJakartaSans_600SemiBold',
+    fontFamily: 'Inter_600SemiBold',
     fontSize: 24,
     color: '#111827',
   },
@@ -129,30 +158,28 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter_400Regular',
     fontSize: 14,
     color: '#6B7280',
-    marginTop: 4,
   },
   content: {
     flex: 1,
-    padding: 16,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 18,
-    color: '#111827',
-    marginBottom: 16,
+    paddingHorizontal: 16,
   },
   sosButton: {
-    backgroundColor: '#DC2626',
-    padding: 24,
+    marginTop: 16,
     borderRadius: 16,
+    backgroundColor: '#DC2626',
+    shadowColor: '#DC2626',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 5,
+  },
+  sosButtonInner: {
+    padding: 24,
     alignItems: 'center',
   },
   sosButtonText: {
     fontFamily: 'Inter_600SemiBold',
-    fontSize: 18,
+    fontSize: 20,
     color: '#fff',
     marginTop: 12,
   },
@@ -164,11 +191,32 @@ const styles = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
-  card: {
-    padding: 16,
-    borderRadius: 16,
+  safetySection: {
+    marginTop: 16,
+  },
+  sectionTitle: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 18,
+    color: '#111827',
     marginBottom: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+  },
+  cardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  card: {
+    width: width / 2 - 24,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cardSuccess: {
+    backgroundColor: 'rgba(5, 150, 105, 0.1)',
   },
   cardHeader: {
     flexDirection: 'row',
@@ -183,31 +231,35 @@ const styles = StyleSheet.create({
   },
   cardDescription: {
     fontFamily: 'Inter_400Regular',
-    fontSize: 14,
+    fontSize: 13,
     color: '#6B7280',
-    marginBottom: 16,
+    minHeight: 40,
   },
-  actionButton: {
-    backgroundColor: '#4F46E5',
-    padding: 12,
-    borderRadius: 8,
-    alignItems: 'center',
+  cardFooter: {
+    alignItems: 'flex-end',
+    marginTop: 8,
   },
-  actionButtonSuccess: {
-    backgroundColor: '#059669',
-  },
-  actionButtonText: {
+  cardAction: {
     fontFamily: 'Inter_600SemiBold',
     fontSize: 14,
-    color: '#fff',
+    color: '#4F46E5',
+  },
+  alertSection: {
+    marginTop: 16,
+    marginBottom: 24,
   },
   alertCard: {
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
     gap: 12,
   },
   alertContent: {

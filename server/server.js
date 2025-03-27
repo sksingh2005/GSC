@@ -20,7 +20,7 @@ const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 const chatSessions = new Map();
 
 // System message (not part of history)
-const systemInstruction = "You are SafeHaven AI, a supportive assistant. Provide thoughtful guidance and practical advice without automatically sharing crisis hotlines or emergency numbers. Respond to specific questions with helpful information while maintaining a warm, conversational tone.";
+const systemInstruction = "You are SafeHaven AI, a supportive assistant. Provide thoughtful guidance and practical advice without automatically sharing crisis hotlines or emergency numbers. Respond to specific questions with helpful information while maintaining a warm, conversational tone and the answer should not exceed like a whole essay or paragraph give it in a more concise manner possible .And if user is not feeling good suggest them some jokes resources like article or You tube videos links ";
 
 // WebSocket connection handler
 wss.on('connection', (ws) => {

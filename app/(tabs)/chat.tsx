@@ -9,31 +9,36 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
-import { Send, Mic, Camera } from 'lucide-react-native'; // Add Mic and Camera icons
+import { Send, Mic, Camera } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Speech from 'expo-speech';
-import { Audio } from 'expo-av'; // For voice recording
-import * as ImagePicker from 'expo-image-picker'; // For camera/image picking
+import { Audio } from 'expo-av';
+import * as ImagePicker from 'expo-image-picker';
+import { useNavigation } from 'expo-router'; // Import useNavigation
 
 interface Message {
   id: string;
   sender: string;
   text?: string;
-  imageUri?: string; // Add imageUri for image messages
-  audioUri?: string; // Add audioUri for voice messages
+  imageUri?: string;
+  audioUri?: string;
 }
 
 export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false); // Track recording state
-  const [recording, setRecording] = useState<Audio.Recording | null>(null); // Store recording instance
+  const [isRecording, setIsRecording] = useState(false);
+  const [recording, setRecording] = useState<Audio.Recording | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
   const socketRef = useRef<WebSocket | null>(null);
 
+  // Use navigation to detect focus/blur events
+  const navigation = useNavigation();
+
   useEffect(() => {
-    const serverUrl = 'ws://localhost:3000/chat'; // Replace with your local IP
+    const serverUrl = 'ws://192.168.0.102:3000/chat';
     socketRef.current = new WebSocket(serverUrl);
 
     socketRef.current.onopen = () => {
@@ -47,17 +52,27 @@ export default function ChatScreen() {
     socketRef.current.onmessage = async (event) => {
       const response = JSON.parse(event.data);
       if (response.type === 'ai_response') {
+        if (isSpeaking) {
+          Speech.stop();
+          setIsSpeaking(false);
+        }
+
         setMessages((prevMessages) => [
           ...prevMessages,
           { id: Date.now().toString(), sender: 'bot', text: response.message },
         ]);
         setIsLoading(false);
 
+        setIsSpeaking(true);
         Speech.speak(response.message, {
           language: 'en-US',
           pitch: 1.0,
           rate: 1.0,
-          onError: (error) => console.error('Speech error:', error),
+          onDone: () => setIsSpeaking(false),
+          onError: (error) => {
+            console.error('Speech error:', error);
+            setIsSpeaking(false);
+          },
         });
       } else if (response.type === 'error') {
         setMessages((prevMessages) => [
@@ -86,10 +101,29 @@ export default function ChatScreen() {
         socketRef.current.close();
       }
       Speech.stop();
+      setIsSpeaking(false);
     };
   }, []);
 
-  // Request permissions for audio recording
+  // Add navigation event listeners to stop speech when the screen loses focus
+  useEffect(() => {
+    const unsubscribeBlur = navigation.addListener('blur', () => {
+      console.log('ChatScreen lost focus, stopping speech');
+      Speech.stop();
+      setIsSpeaking(false);
+    });
+
+    const unsubscribeFocus = navigation.addListener('focus', () => {
+      console.log('ChatScreen gained focus');
+      // Optionally, you can resume or restart something here if needed
+    });
+
+    return () => {
+      unsubscribeBlur();
+      unsubscribeFocus();
+    };
+  }, [navigation]);
+
   const requestAudioPermission = async () => {
     const { status } = await Audio.requestPermissionsAsync();
     if (status !== 'granted') {
@@ -99,7 +133,6 @@ export default function ChatScreen() {
     return true;
   };
 
-  // Request permissions for camera and photo library
   const requestCameraPermission = async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
     if (status !== 'granted') {
@@ -114,7 +147,6 @@ export default function ChatScreen() {
     return true;
   };
 
-  // Start recording voice
   const startRecording = async () => {
     const hasPermission = await requestAudioPermission();
     if (!hasPermission) return;
@@ -135,7 +167,6 @@ export default function ChatScreen() {
     }
   };
 
-  // Stop recording and send the voice message
   const stopRecording = async () => {
     if (!recording) return;
 
@@ -153,7 +184,6 @@ export default function ChatScreen() {
         };
         setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-        // Send the audio URI to the server (you'll need to handle this on the server side)
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
           socketRef.current.send(JSON.stringify({
             type: 'user_audio',
@@ -166,7 +196,6 @@ export default function ChatScreen() {
     }
   };
 
-  // Capture or pick an image
   const pickImage = async () => {
     const hasPermission = await requestCameraPermission();
     if (!hasPermission) return;
@@ -187,7 +216,6 @@ export default function ChatScreen() {
       };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
 
-      // Send the image URI to the server (you'll need to handle this on the server side)
       if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
         socketRef.current.send(JSON.stringify({
           type: 'user_image',
@@ -199,6 +227,11 @@ export default function ChatScreen() {
 
   const sendMessage = () => {
     if (inputText.trim() === '') return;
+
+    if (isSpeaking) {
+      Speech.stop();
+      setIsSpeaking(false);
+    }
 
     const newMessage: Message = {
       id: Date.now().toString(),
@@ -273,7 +306,6 @@ export default function ChatScreen() {
                 )}
                 {message.audioUri && (
                   <Text style={styles.messageText}>[Voice Message]</Text>
-                  // You can add a play button here to play the audio
                 )}
               </View>
             </View>
